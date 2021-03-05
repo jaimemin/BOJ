@@ -9,7 +9,7 @@ int main(void)
 	int A, I;
 	cin >> A >> I;
 
-	// ¿Ã¸²ÀÌ¹Ç·Î Æò±ÕÀÌ (I - 1)ÀÌ µÇ´Â ¸á·Îµð °¹¼öº¸´Ù 1 ´õÇØÁÖ¸é µÊ
+	// ì˜¬ë¦¼ì´ë¯€ë¡œ í‰ê· ì´ (I - 1)ì´ ë˜ëŠ” ë©œë¡œë”” ê°¯ìˆ˜ë³´ë‹¤ 1 ë”í•´ì£¼ë©´ ë¨
 	int result = A * (I - 1) + 1;
 
 	cout << result << "\n";
