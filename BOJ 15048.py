@@ -1,0 +1,1 @@
+print(int(intput()) % 3)
