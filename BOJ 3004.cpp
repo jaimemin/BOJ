@@ -9,7 +9,7 @@ int main(void)
 	cin >> N;
 
 	int row = N / 2 + 1;
-	int col = N - row + 1;
+	int col = N - row + 2;
 	int result = row * col;
 
 	cout << result << "\n";
