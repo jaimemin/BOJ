@@ -36,10 +36,10 @@ int main(void)
 			break;
 		}
 
-		// ±×³É »ï°¢Çü
+		// å¼Šæˆ ä¼™é˜¿å±ˆ
 		result[TRIANGLE]++;
 
-		// Á÷°¢»ï°¢Çü
+		// æµé˜¿ä¼™é˜¿å±ˆ
 		if (sides[0] * sides[0] + sides[1] * sides[1] == sides[2] * sides[2])
 		{
 			result[ANGLE]++;
@@ -47,7 +47,7 @@ int main(void)
 			continue;
 		}
 
-		// ¿¹°¢
+		// æŠ—é˜¿
 		if (sides[0] * sides[0] + sides[1] * sides[1] > sides[2] * sides[2])
 		{
 			result[ACUTE]++;
@@ -55,7 +55,7 @@ int main(void)
 			continue;
 		}
 
-		// µÐ°¢
+		// æ•Œé˜¿
 		result[OBTUSE]++;
 	}
 
