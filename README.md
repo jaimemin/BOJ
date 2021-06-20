@@ -5,3 +5,5 @@ solved.ac 기준 최하위 랭킹부터
 Bronze5 ✅
 
 Bronze4 ✅
+
+Bronze3 (153/405)
