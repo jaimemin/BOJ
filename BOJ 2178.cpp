@@ -5,45 +5,60 @@ using namespace std;
 
 const int MAX = 100;
 
+int maze[MAX][MAX];
+
+bool visited[MAX][MAX];
+
 typedef struct
 {
 	int y, x;
-}Dir;
-
-Dir moveDir[4] = { { 1, 0 },{ -1, 0 },{ 0, -1 },{ 0, 1 } };
+	int cnt;
+} State;
 
 typedef struct
 {
-	int y, x, moveCnt;
-}State;
+	int y, x;
+} Dir;
 
-bool operator<(State a, State b)
+Dir moveDir[4] = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
+
+int main(void)
 {
-	return a.moveCnt > b.moveCnt;
-}
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	int N, M;
+	cin >> N >> M;
 
-int N, M;
-string maze[MAX];
-bool visited[MAX][MAX];
+	for (int y = 0; y < N; y++)
+	{
+		string s;
+		cin >> s;
 
-void BFS(void)
-{
-	priority_queue<State> pq;
-	pq.push({ 0, 0, 1 });
+		int x = 0;
+
+		for (char c : s)
+		{
+			maze[y][x++] = c - '0';
+		}
+	}
+
+	queue<State> q;
+	q.push({ 0, 0, 1 });
 	visited[0][0] = true;
 
-	while (!pq.empty())
+	while (!q.empty())
 	{
-		int y = pq.top().y;
-		int x = pq.top().x;
-		int cnt = pq.top().moveCnt;
-		pq.pop();
+		State state = q.front();
+		int y = state.y;
+		int x = state.x;
+		int cnt = state.cnt;
+		q.pop();
 
 		if (y == N - 1 && x == M - 1)
 		{
 			cout << cnt << "\n";
 
-			return;
+			return 0;
 		}
 
 		for (int k = 0; k < 4; k++)
@@ -56,29 +71,15 @@ void BFS(void)
 				continue;
 			}
 
-			if (maze[nextY][nextX] == '0' || visited[nextY][nextX])
+			if (visited[nextY][nextX] || !maze[nextY][nextX])
 			{
 				continue;
 			}
 
 			visited[nextY][nextX] = true;
-			pq.push({ nextY, nextX, cnt + 1 });
+			q.push({ nextY, nextX, cnt + 1 });
 		}
 	}
-}
-
-int main(void)
-{
-	ios_base::sync_with_stdio(0);
-	cin.tie(0);
-	cin >> N >> M;
-
-	for (int n = 0; n < N; n++)
-	{
-		cin >> maze[n];
-	}
-
-	BFS();
 
 	return 0;
 }
