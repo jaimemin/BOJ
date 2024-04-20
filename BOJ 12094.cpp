@@ -40,7 +40,7 @@ struct Board
 		for (int i = 0; i < N; i++)
 		{
 			int idx = -1;
-			bool placed = false;
+			bool mergable = false;
 
 			for (int j = 0; j < N; j++)
 			{
@@ -49,15 +49,15 @@ struct Board
 					continue;
 				}
 
-				if (placed && arr[i][j] == temp[i][idx])
+				if (mergable && arr[i][j] == temp[i][idx])
 				{
 					temp[i][idx] *= 2;
-					placed = false;
+					mergable = false;
 				}
 				else
 				{
 					temp[i][++idx] = arr[i][j];
-					placed = true;
+					mergable = true;
 				}
 			}
 
