@@ -1,56 +1,55 @@
 #include <iostream>
-#include <vector>
 #include <queue>
-#include <algorithm>
+#include <set>
 #include <cstring>
 using namespace std;
 
-const int MAX = 1010;
+const int MAX = 1e3 + 1e2;
 
 int N, M, V;
-vector<int> vertexes[MAX];
+
+set<int> graph[MAX];
+
 bool visited[MAX];
 
-void DFS(int node)
+void dfs(int node)
 {
 	cout << node << " ";
+	visited[node] = true;
 
-	for (int vertex : vertexes[node])
+	for (int next : graph[node])
 	{
-		if (visited[vertex])
+		if (visited[next])
 		{
 			continue;
 		}
 
-		visited[vertex] = true;
-		DFS(vertex);
+		dfs(next);
 	}
 }
 
-void BFS(int node)
+void bfs(int node)
 {
-	memset(visited, false, sizeof(visited));
-
 	queue<int> q;
 	q.push(node);
 	visited[node] = true;
 
 	while (!q.empty())
 	{
-		int curNode = q.front();
+		int cur = q.front();
 		q.pop();
 
-		cout << curNode << " ";
+		cout << cur << " ";
 
-		for (int vertex : vertexes[curNode])
+		for (int next : graph[cur])
 		{
-			if (visited[vertex])
+			if (visited[next])
 			{
 				continue;
 			}
 
-			visited[vertex] = true;
-			q.push(vertex);
+			visited[next] = true;
+			q.push(next);
 		}
 	}
 }
@@ -61,25 +60,19 @@ int main(void)
 	cin.tie(0);
 	cin >> N >> M >> V;
 
-	for (int m = 0; m < M; m++)
+	for (int i = 0; i < M; i++)
 	{
-		int u, v;
-		cin >> u >> v;
+		int a, b;
+		cin >> a >> b;
 
-		vertexes[u].push_back(v);
-		vertexes[v].push_back(u);
+		graph[a].insert(b);
+		graph[b].insert(a);
 	}
 
-	for (int n = 1; n <= N; n++)
-	{
-		sort(vertexes[n].begin(), vertexes[n].end());
-	}
-
-	visited[V] = true;
-	DFS(V);
+	dfs(V);
 	cout << "\n";
-
-	BFS(V);
+	memset(visited, false, sizeof(visited));
+	bfs(V);
 	cout << "\n";
 
 	return 0;
