@@ -48,7 +48,7 @@ int main(void)
 
 	while (M--)
 	{
-		int a, b, c;
+		long long a, b, c;
 		cin >> a >> b >> c;
 
 		if (a == 1)
