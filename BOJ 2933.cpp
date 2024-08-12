@@ -1,166 +1,173 @@
 #include <iostream>
 #include <vector>
-#include <queue>
 #include <algorithm>
+#include <cstring>
 using namespace std;
+
+const int MAX = 100;
 
 typedef struct
 {
-    int y, x;
+	int y, x;
 } Dir;
+
+int N;
 
 int R, C;
 
-vector<string> cave;
+char cave[MAX][MAX];
 
-Dir moveDir[4] = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
+int branch[MAX];
 
-void throwStick(int row, bool fromLeft) 
+int visited[MAX][MAX];
+
+vector<pair<int, int>> group;
+
+Dir moveDir[4] = { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
+
+void DFS(int y, int x)
 {
-    int col;
+	if (cave[y][x] == '.' || visited[y][x])
+	{
+		return;
+	}
 
-    if (fromLeft) {
-        col = 0;
+	visited[y][x] = true;
+	group.push_back({ y,x });
 
-        while (col < C && cave[row][col] == '.')
-        {
-            col++;
-        }
-    }
-    else 
-    {
-        col = C - 1;
+	for (int k = 0; k < 4; k++)
+	{
+		int nextY = y + moveDir[k].y;
+		int nextX = x + moveDir[k].x;
 
-        while (col >= 0 && cave[row][col] == '.')
-        {
-            col--;
-        }
-    }
-
-    if (col >= 0 && col < C) 
-    {
-        cave[row][col] = '.';
-    }
+		if (0 <= nextY && nextY < R
+			&& 0 <= nextX && nextX < C)
+		{
+			DFS(nextY, nextX);
+		}
+	}
 }
 
-void bfs(int startY, int startX, vector<vector<bool>>& visited) 
+void func()
 {
-    queue<pair<int, int>> q;
-    q.push({ startY, startX });
-    visited[startY][startX] = true;
+	memset(visited, 0, sizeof(visited));
 
-    while (!q.empty()) 
-    {
-        pair<int, int> p = q.front();
-        int y = p.first;
-        int x = p.second;
-        q.pop();
+	for (int y = 0; y < R; y++)
+	{
+		for (int x = 0; x < C; x++)
+		{
+			if (cave[y][x] == '.' || visited[y][x])
+			{
+				continue;
+			}
 
-        for (int k = 0; k < 4; k++) 
-        {
-            int nextY = y + moveDir[k].y;
-            int nextX = x + moveDir[k].x;
+			group.clear();
+			DFS(y, x);
 
-            if (nextY >= 0 && nextY < R
-                && nextX >= 0 && nextX < C
-                && cave[nextY][nextX] == 'x' && !visited[nextY][nextX])
-            {
-                visited[nextY][nextX] = true;
-                q.push({ nextY, nextX });
-            }
-        }
-    }
+			vector<int> low(C, -1);
+
+			for (auto &p : group)
+			{
+				//각 열마다 가장 밑에있는 행을 찾는다
+				low[p.second] = max(low[p.second], p.first);
+				//옮길점들 이므로 '.'로 바꿔주자
+				cave[p.first][p.second] = '.';
+			}
+
+			int lowmove = R;
+
+			for (int j = 0; j < C; ++j) 
+			{
+				if (low[j] == -1)
+				{
+					continue;
+				}
+				
+				int i = low[j];
+
+				while (i < R && cave[i][j] == '.') 
+				{
+					i++;
+				}
+
+				lowmove = min(lowmove, i - low[j] - 1);
+			}
+
+			for (auto& p : group)
+			{
+				p.first += lowmove;
+				cave[p.first][p.second] = 'x';
+				visited[p.first][p.second] = true;
+			}
+		}
+	}
 }
 
-void dropCluster() 
+int main()
 {
-    vector<pair<int, int>> cluster;
-    vector<vector<bool>> visited(R, vector<bool>(C, false));
-    vector<int> bottom(R, -1);
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cin >> R >> C;
 
-    for (int i = 0; i < C; i++) 
-    {
-        if (cave[R - 1][i] == 'x' && !visited[R - 1][i]) 
-        {
-            bfs(R - 1, i, visited);
-        }
-    }
+	for (int y = 0; y < R; y++)
+	{
+		for (int x = 0; x < C; x++)
+		{
+			cin >> cave[y][x];
+		}
+	}
 
-    for (int i = 0; i < R; i++) 
-    {
-        for (int j = 0; j < C; j++) 
-        {
-            if (cave[i][j] == 'x' && !visited[i][j])
-            {
-                cluster.push_back({ i, j });
-                cave[i][j] = '.';
-                bottom[j] = max(bottom[j], i);
-            }
-        }
-    }
+	cin >> N;
 
-    if (cluster.empty())
-    {
-        return;
-    }
+	for (int i = 0; i < N; i++)
+	{
+		int num;
+		cin >> num;
 
-    int dropHeight = R;
+		branch[i] = R - num;
+	}
 
-    for (pair<int, int> p : cluster)
-    {
-        int y = p.first;
-        int x = p.second;
-        int height = 0;
+	for (int i = 0; i < N; i++)
+	{
+		int height = branch[i];
 
-        while (y + height + 1 < R && cave[y + height + 1][x] == '.')
-        {
-            height++;
-        }
+		if (i % 2 == 0)
+		{
+			for (int x = 0; x < C; x++)
+			{
+				if (cave[height][x] == 'x') 
+				{
+					cave[height][x] = '.';
 
-        dropHeight = min(dropHeight, height);
-    }
+					break;
+				}
+			}
+		}
+		else
+		{
+			for (int x = C - 1; x >= 0; x--)
+			{
+				if (cave[height][x] == 'x') 
+				{
+					cave[height][x] = '.';
 
-    for (pair<int, int> p : cluster) 
-    {
-        cave[p.first + dropHeight][p.second] = 'x';
-    }
-}
+					break;
+				}
+			}
+		}
 
-int main() 
-{
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cin >> R >> C;
-    cave.resize(R);
+		func();
+	}
 
-    for (int i = 0; i < R; i++) 
-    {
-        cin >> cave[i];
-    }
+	for (int y = 0; y < R; y++) 
+	{
+		for (int x = 0; x < C; x++)
+		{
+			cout << cave[y][x];
+		}
 
-    int N;
-    cin >> N;
-    vector<int> heights(N);
+		cout << "\n";
+	}
 
-    for (int i = 0; i < N; i++) 
-    {
-        cin >> heights[i];
-    }
-
-    bool fromLeft = true;
-
-    for (int i = 0; i < N; i++)
-    {
-        int row = R - heights[i];
-        throwStick(row, fromLeft);
-        dropCluster();
-        fromLeft = !fromLeft;
-    }
-
-    for (int i = 0; i < R; i++) 
-    {
-        cout << cave[i] << "\n";
-    }
-
-    return 0;
+	return 0;
 }
