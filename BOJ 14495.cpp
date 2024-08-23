@@ -16,7 +16,7 @@ int main()
         return 0;
     }
 
-    vector<int> sequence(n + 1);
+    vector<long long> sequence(n + 1);
     
     for (int i = 1; i <= 3; i++)
     {
