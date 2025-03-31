@@ -6,16 +6,17 @@ const int MAX = 2e3 + 2;
 
 int N, M;
 
-int friends[MAX][MAX];
+int friendsArr[MAX][MAX];
 
-bool validateCandidate(vector<int>& A)
+bool validateCandidate(const vector<int>& A)
 {
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < N; i++) 
     {
         int diffCount = 0;
-        for (int j = 0; j < M; j++)
+
+        for (int j = 0; j < M; j++) 
         {
-            if (A[j] != friends[i][j])
+            if (A[j] != friendsArr[i][j])
             {
                 diffCount++;
             }
@@ -41,19 +42,19 @@ int main()
     cin.tie(0);
     cin >> N >> M;
 
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < N; i++) 
     {
         for (int j = 0; j < M; j++) 
         {
-            cin >> friends[i][j];
+            cin >> friendsArr[i][j];
         }
     }
 
     vector<int> candidate;
 
-    for (int i = 0; i < M; i++)
+    for (int i = 0; i < M; i++) 
     {
-        candidate.push_back(friends[0][i]);
+        candidate.push_back(friendsArr[0][i]);
     }
 
     int refFriendIndex = -1;
@@ -65,13 +66,13 @@ int main()
 
         for (int j = 0; j < M; j++)
         {
-            if (candidate[j] != friends[i][j])
+            if (candidate[j] != friendsArr[i][j])
             {
                 currDiff.push_back(j);
             }
         }
 
-        if (currDiff.size() == 2) 
+        if (currDiff.size() == 2)
         {
             refFriendIndex = i;
             diffIndices = currDiff;
@@ -85,11 +86,11 @@ int main()
         for (int idx : diffIndices) 
         {
             vector<int> A = candidate;
-            A[idx] = friends[refFriendIndex][idx];
+            A[idx] = friendsArr[refFriendIndex][idx];
 
-            if (validateCandidate(A))
+            if (validateCandidate(A)) 
             {
-                for (int j = 0; j < M; j++) 
+                for (int j = 0; j < M; j++)
                 {
                     cout << A[j] << (j + 1 == M ? "\n" : " ");
                 }
@@ -98,15 +99,15 @@ int main()
             }
         }
     }
-    else
+    else 
     {
         int pos = -1;
 
-        for (int i = 1; i < N; i++)
+        for (int i = 1; i < N; i++) 
         {
             for (int j = 0; j < M; j++)
             {
-                if (candidate[j] != friends[i][j])
+                if (candidate[j] != friendsArr[i][j])
                 {
                     pos = j;
 
@@ -120,6 +121,11 @@ int main()
             }
         }
 
+        if (pos == -1)
+        {
+            pos = 0;
+        }
+
         int newVal = 0;
 
         if (newVal == candidate[pos])
@@ -130,7 +136,7 @@ int main()
         vector<int> A = candidate;
         A[pos] = newVal;
 
-        if (validateCandidate(A))
+        if (validateCandidate(A)) 
         {
             for (int j = 0; j < M; j++)
             {
