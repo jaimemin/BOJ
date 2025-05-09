@@ -1,36 +1,77 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
-int main() {
+int main()
+{
     ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
+    cin.tie(0);
     int N, K;
     cin >> N >> K;
 
-    // 1) K == N-1 인 경우 불가능
-    if (N >= 2 && K == N - 1) {
-        cout << -1 << "\n";
-        return 0;
-    }
+    if (K == N)
+    {
+        cout << N;
 
-    // 2) K == N 인 경우: 역순 출력
-    if (K == N) {
-        for (int x = N; x >= 1; --x) {
-            cout << x << (x == 1 ? '\n' : ' ');
+        for (int i = 1; i < N; i++)
+        {
+            cout << " " << i;
         }
+
+        cout << "\n";
+
         return 0;
     }
 
-    // 3) K <= N-2 인 경우
-    //    [K, K-1, ..., 1, K+1, K+2, ..., N]
-    //    (이때 N >= 2, K <= N-2 이므로 항상 길이 N를 맞춤)
-    for (int x = K; x >= 1; --x) {
-        cout << x << ' ';
+    if (K == N - 1) 
+    {
+        if (N <= 4) 
+        {
+            cout << -1 << '\n';
+
+            return 0;
+        }
+
+        cout << 1;
+
+        for (int x = N - 1; x >= 2; x--)
+        {
+            cout << " " << x;
+        }
+
+        cout << " " << N << "\n";
+
+        return 0;
     }
-    for (int x = K + 1; x <= N; ++x) {
-        cout << x << (x == N ? '\n' : ' ');
+
+    vector<int> answer;
+    answer.push_back(K);
+    answer.push_back(K + 1);
+
+    for (int x = 1; x < K; x++)
+    {
+        answer.push_back(x);
     }
+
+    for (int x = K + 3; x <= N; x++)
+    {
+        answer.push_back(x);
+    }
+
+    answer.push_back(K + 2);
+
+    for (int i = 0; i < N; i++) 
+    {
+        if (i)
+        {
+            cout << " ";
+        }
+
+        cout << answer[i];
+    }
+
+    cout << "\n";
 
     return 0;
 }
