@@ -1,104 +1,105 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <climits>
 using namespace std;
 
-int main()
+int getCount(vector<int>& arr, int limit) 
+{
+    int cnt = 0;
+    int left = 0, right = arr.size() - 1;
+
+    while (left < right)
+    {
+        if (arr[left] == 0) 
+        {
+            left++;
+
+            continue;
+        }
+
+        if (arr[right] == 0)
+        {
+            right--;
+
+            continue;
+        }
+
+        if (arr[left] + arr[right] <= limit)
+        {
+            cnt++;
+            left++;
+        }
+
+        right--;
+    }
+
+    return cnt;
+}
+
+int find(vector<int>& arr, int limit, int maxPairs)
+{
+    int n = arr.size();
+    int low = 0, high = n - 1;
+    int pos = n;
+
+    while (low <= high)
+    {
+        int mid = (low + high) / 2;
+        int saved = arr[mid];
+
+        arr[mid] = 0;
+        int newCnt = getCount(arr, limit);
+        arr[mid] = saved;
+
+        if (newCnt < maxPairs)
+        {
+            low = mid + 1;
+        }
+        else
+        {
+            pos = mid;
+
+            high = mid - 1;
+        }
+    }
+
+    return (pos < n ? arr[pos] : limit);
+}
+
+int main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(0);
-    int N, M;
-    long long K;
+    int N, M, K;
     cin >> N >> M >> K;
 
-    vector<long long> sheepSizes(N), wolfSizes(M);
+    vector<int> sheep(N), wolves(M);
 
     for (int i = 0; i < N; i++)
     {
-        cin >> sheepSizes[i];
+        cin >> sheep[i];
     }
 
     for (int i = 0; i < M; i++)
     {
-        cin >> wolfSizes[i];
+        cin >> wolves[i];
     }
 
-    sort(sheepSizes.begin(), sheepSizes.end());
-    sort(wolfSizes.begin(), wolfSizes.end());
+    sort(sheep.begin(), sheep.end());
+    sort(wolves.begin(), wolves.end());
 
-    long long pensSheep = 0;
-    bool hasSingleSheep = false;
-    long long minSingleSheep = LLONG_MAX;
-    int left = 0, right = N - 1;
+    int maxSheepPairs = getCount(sheep, K);
+    int maxWolfPairs = getCount(wolves, K);
+    int minSheepSingle = find(sheep, K, maxSheepPairs);
+    int minWolfSingle = find(wolves, K, maxWolfPairs);
+    int totalPens = (N - maxSheepPairs) + (M - maxWolfPairs);
 
-    while (left <= right)
+    if (minSheepSingle + minWolfSingle <= K)
     {
-        if (left == right)
-        {
-            pensSheep++;
-            hasSingleSheep = true;
-            minSingleSheep = min(minSingleSheep, sheepSizes[left]);
-
-            break;
-        }
-
-        if (sheepSizes[left] + sheepSizes[right] <= K)
-        {
-            pensSheep++;
-            left++;
-            right--;
-        }
-        else
-        {
-            pensSheep++;
-            hasSingleSheep = true;
-            minSingleSheep = min(minSingleSheep, sheepSizes[right]);
-            right--;
-        }
+        totalPens--;
     }
 
-    long long pensWolf = 0;
-    bool hasSingleWolf = false;
-    long long minSingleWolf = LLONG_MAX;
-    left = 0;
-    right = M - 1;
-
-    while (left <= right)
-    {
-        if (left == right)
-        {
-            pensWolf++;
-            hasSingleWolf = true;
-            minSingleWolf = min(minSingleWolf, wolfSizes[left]);
-
-            break;
-        }
-
-        if (wolfSizes[left] + wolfSizes[right] <= K)
-        {
-            pensWolf++;
-            left++;
-            right--;
-        }
-        else
-        {
-            pensWolf++;
-            hasSingleWolf = true;
-            minSingleWolf = min(minSingleWolf, wolfSizes[right]);
-            right--;
-        }
-    }
-
-    long long result = pensSheep + pensWolf;
-
-    if (hasSingleSheep && hasSingleWolf
-        && minSingleSheep + minSingleWolf <= K) 
-    {
-        result--;
-    }
-
-    cout << result << "\n";
+    cout << totalPens << "\n";
 
     return 0;
 }
