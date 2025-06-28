@@ -1,30 +1,6 @@
 #include <iostream>
 using namespace std;
 
-long long floorSqrt(long long x)
-{
-    long long lo = 0, hi = 3000000000LL;
-    long long answer = 0;
-
-    while (lo <= hi)
-    {
-        long long mid = (lo + hi) / 2;
-        long long sq = mid * mid;
-
-        if (sq <= x)
-        {
-            answer = mid;
-            lo = mid + 1;
-        }
-        else
-        {
-            hi = mid - 1;
-        }
-    }
-
-    return answer;
-}
-
 int main()
 {
     ios::sync_with_stdio(false);
@@ -37,12 +13,30 @@ int main()
         long long N;
         cin >> N;
 
-        long long maxByStarts = (N + 2) / 3 + 1;
-        long long D = 1 + 8 * N;
-        long long sqrtD = floorSqrt(D);
-        long long maxBySum = (sqrtD - 1) / 2;
+        long long availableStarts = (N + 2) / 3;
+        long long low = 0, high = 1000000000LL;
 
-        cout << (maxByStarts < maxBySum ? maxByStarts : maxBySum) << "\n";
+        for (int i = 0; i < 100; i++)
+        {
+            long long mid = (low + high) / 2;
+            long long needed = 3LL * mid * (mid + 1) / 2;
+
+            if (needed <= availableStarts)
+            {
+                low = mid;
+            }
+            else
+            {
+                high = mid;
+            }
+        }
+
+        long long groupCount = (3LL * high * (high + 1) / 2 <= availableStarts ? high : low);
+        long long usedStarts = 3LL * groupCount * (groupCount + 1) / 2;
+        long long remain = availableStarts - usedStarts;
+        long long answer = 1 + 3LL * groupCount + remain / (groupCount + 1);
+
+        cout << answer << "\n";
     }
 
     return 0;
