@@ -1,11 +1,13 @@
 #include <iostream>
 #include <vector>
-#include <string>
 #include <algorithm>
+#include <string>
 #include <cstring>
 using namespace std;
 
-int dp[105][11][11];
+int dp[105][11][11]; 
+
+enum Obs { NONE, LOW, HIGH, UPPER };
 
 int main()
 {
@@ -14,90 +16,86 @@ int main()
     int N, J, S, H, K;
     cin >> N >> J >> S >> H >> K;
 
-    vector<string> stage(3);
+    vector<string> a(3);
 
     for (int i = 0; i < 3; i++)
     {
-        cin >> stage[i];
+        cin >> a[i];
+    }
+
+    vector<Obs> obs(N + 1, NONE);
+
+    for (int c = 2; c <= N - 1; c++)
+    {
+        if (a[0][c - 1] == 'v' || a[1][c - 1] == 'v') 
+        {
+            obs[c] = UPPER;
+        }
+        else if (a[1][c - 1] == '^')
+        {
+            obs[c] = HIGH;
+        }
+        else if (a[2][c - 1] == '^') 
+        {
+            obs[c] = LOW;
+        }
     }
 
     memset(dp, -1, sizeof(dp));
     dp[1][0][0] = H;
 
-    vector<char> obs(N + 1, ' ');
-
-    for (int col = 2; col <= N - 1; col++)
+    for (int c = 1; c < N; c++) 
     {
-        if (stage[1][col - 1] == '^')
+        for (int j = 0; j <= J; j++)
         {
-            obs[col] = '^';
-        }
-        else if (stage[1][col - 1] == 'v')
-        {
-            obs[col] = 'v';
-        }
-        else if (stage[0][col - 1] == '.')
-        {
-            obs[col] = '.';
-        }
-    }
-
-    for (int col = 1; col < N; col++)
-    {
-        for (int jump = 0; jump <= J; jump++)
-        {
-            for (int slide = 0; slide <= S; slide++)
+            for (int s = 0; s <= S; ++s)
             {
-                if (dp[col][jump][slide] == -1)
+                if (dp[c][j][s] != -1)
                 {
-                    continue;
-                }
+                    int hp = dp[c][j][s];
+                    int nc = c + 1;
+                    switch (obs[nc])
+                    {
+                    case NONE: 
+                        dp[nc][j][s] = max(dp[nc][j][s], hp);
 
-                int hp = dp[col][jump][slide];
-                int ncol = col + 1;
-                char o = obs[ncol];
+                        break;
+                    case LOW:
+                        if (j + 1 <= J)
+                        {
+                            dp[nc][j + 1][s] = max(dp[nc][j + 1][s], hp);
+                        }
 
-                if (o == ' ')
-                {
-                    if (dp[ncol][jump][slide] < hp)
-                    {
-                        dp[ncol][jump][slide] = hp;
-                    }
-                }
-                else if (o == '^')
-                {
-                    if (jump + 1 <= J)
-                    {
-                        dp[ncol][jump + 1][slide] = max(dp[ncol][jump + 1][slide], hp);
-                    }
+                        if (hp - K > 0)
+                        {
+                            dp[nc][j][s] = max(dp[nc][j][s], hp - K);
+                        }
 
-                    if (hp - K > 0)
-                    {
-                        dp[ncol][jump][slide] = max(dp[ncol][jump][slide], hp - K);
-                    }
-                }
-                else if (o == 'v')
-                {
-                    if (jump + 2 <= J)
-                    {
-                        dp[ncol][jump + 2][slide] = max(dp[ncol][jump + 2][slide], hp);
-                    }
+                        break;
+                    case HIGH:
+                        if (j + 2 <= J)
+                        {
+                            dp[nc][j + 2][s] = max(dp[nc][j + 2][s], hp);
+                        }
 
-                    if (hp - K > 0)
-                    {
-                        dp[ncol][jump][slide] = max(dp[ncol][jump][slide], hp - K);
-                    }
-                }
-                else if (o == '.')
-                {
-                    if (slide + 1 <= S)
-                    {
-                        dp[ncol][jump][slide + 1] = max(dp[ncol][jump][slide + 1], hp);
-                    }
+                        if (hp - K > 0)
+                        {
+                            dp[nc][j][s] = max(dp[nc][j][s], hp - K);
+                        }
 
-                    if (hp - K > 0)
-                    {
-                        dp[ncol][jump][slide] = max(dp[ncol][jump][slide], hp - K);
+                        break;
+                    case UPPER:
+                        if (s + 1 <= S)
+                        {
+                            dp[nc][j][s + 1] = max(dp[nc][j][s + 1], hp);
+                        }
+
+                        if (hp - K > 0)
+                        {
+                            dp[nc][j][s] = max(dp[nc][j][s], hp - K);
+                        }
+
+                        break;
                     }
                 }
             }
@@ -106,11 +104,11 @@ int main()
 
     int answer = -1;
 
-    for (int jump = 0; jump <= J; jump++)
+    for (int j = 0; j <= J; j++)
     {
-        for (int slide = 0; slide <= S; slide++)
+        for (int s = 0; s <= S; s++)
         {
-            answer = max(answer, dp[N][jump][slide]);
+            answer = max(answer, dp[N][j][s]);
         }
     }
 
